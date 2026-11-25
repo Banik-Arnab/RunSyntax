@@ -1,0 +1,12 @@
+{
+  "name": "runsyntax-backend",
+  "version": "1.0.0",
+  "description": "Express backend that runs the RunSyntax C/Flex/Bison compiler",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,125 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|x
+TOKEN|1|DELIMITER|;
+TOKEN|2|KEYWORD|int
+TOKEN|2|IDENTIFIER|y
+TOKEN|2|DELIMITER|;
+TOKEN|3|KEYWORD|bool
+TOKEN|3|IDENTIFIER|flag
+TOKEN|3|DELIMITER|;
+TOKEN|4|IDENTIFIER|x
+TOKEN|4|OPERATOR|=
+TOKEN|4|INT_LITERAL|10
+TOKEN|4|DELIMITER|;
+TOKEN|5|IDENTIFIER|y
+TOKEN|5|OPERATOR|=
+TOKEN|5|INT_LITERAL|0
+TOKEN|5|DELIMITER|;
+TOKEN|6|IDENTIFIER|flag
+TOKEN|6|OPERATOR|=
+TOKEN|6|BOOL_LITERAL|true
+TOKEN|6|DELIMITER|;
+TOKEN|7|KEYWORD|while
+TOKEN|7|DELIMITER|(
+TOKEN|7|IDENTIFIER|x
+TOKEN|7|OPERATOR|>
+TOKEN|7|INT_LITERAL|0
+TOKEN|7|DELIMITER|)
+TOKEN|7|DELIMITER|{
+TOKEN|8|IDENTIFIER|y
+TOKEN|8|OPERATOR|=
+TOKEN|8|IDENTIFIER|y
+TOKEN|8|OPERATOR|+
+TOKEN|8|IDENTIFIER|x
+TOKEN|8|DELIMITER|;
+TOKEN|9|IDENTIFIER|x
+TOKEN|9|OPERATOR|=
+TOKEN|9|IDENTIFIER|x
+TOKEN|9|OPERATOR|-
+TOKEN|9|INT_LITERAL|1
+TOKEN|9|DELIMITER|;
+TOKEN|10|DELIMITER|}
+TOKEN|11|KEYWORD|if
+TOKEN|11|DELIMITER|(
+TOKEN|11|IDENTIFIER|flag
+TOKEN|11|OPERATOR|==
+TOKEN|11|BOOL_LITERAL|true
+TOKEN|11|DELIMITER|)
+TOKEN|11|DELIMITER|{
+TOKEN|12|KEYWORD|print
+TOKEN|12|IDENTIFIER|y
+TOKEN|12|DELIMITER|;
+TOKEN|13|DELIMITER|}
+TOKEN|13|KEYWORD|else
+TOKEN|13|DELIMITER|{
+TOKEN|14|KEYWORD|print
+TOKEN|14|IDENTIFIER|x
+TOKEN|14|DELIMITER|;
+TOKEN|15|DELIMITER|}
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int x]
+  Declaration [int y]
+  Declaration [bool flag]
+  Assignment [x]
+    Int [10]
+  Assignment [y]
+    Int [0]
+  Assignment [flag]
+    Bool [true]
+  While
+    condition:
+      BinaryOp [>]
+        Identifier [x]
+        Int [0]
+    body:
+      Block
+        Assignment [y]
+          BinaryOp [+]
+            Identifier [y]
+            Identifier [x]
+        Assignment [x]
+          BinaryOp [-]
+            Identifier [x]
+            Int [1]
+  If
+    condition:
+      BinaryOp [==]
+        Identifier [flag]
+        Bool [true]
+    then:
+      Block
+        Print
+          Identifier [y]
+    else:
+      Block
+        Print
+          Identifier [x]
+===SYMBOLS===
+SYMBOL|x|int|0|1
+SYMBOL|y|int|0|2
+SYMBOL|flag|bool|0|3
+===TAC===
+TAC|x = 10
+TAC|y = 0
+TAC|flag = true
+TAC|L1:
+TAC|t1 = x > 0
+TAC|ifFalse t1 goto L2
+TAC|t2 = y + x
+TAC|y = t2
+TAC|t3 = x - 1
+TAC|x = t3
+TAC|goto L1
+TAC|L2:
+TAC|t4 = flag == true
+TAC|ifFalse t4 goto L3
+TAC|print y
+TAC|goto L4
+TAC|L3:
+TAC|print x
+TAC|L4:
+===DONE===
+--- stderr ---

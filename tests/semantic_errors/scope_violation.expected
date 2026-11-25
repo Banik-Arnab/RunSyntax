@@ -1,0 +1,40 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|a
+TOKEN|1|DELIMITER|;
+TOKEN|2|DELIMITER|{
+TOKEN|3|KEYWORD|int
+TOKEN|3|IDENTIFIER|inner
+TOKEN|3|DELIMITER|;
+TOKEN|4|IDENTIFIER|inner
+TOKEN|4|OPERATOR|=
+TOKEN|4|INT_LITERAL|5
+TOKEN|4|DELIMITER|;
+TOKEN|5|DELIMITER|}
+TOKEN|6|IDENTIFIER|a
+TOKEN|6|OPERATOR|=
+TOKEN|6|IDENTIFIER|inner
+TOKEN|6|DELIMITER|;
+TOKEN|7|KEYWORD|print
+TOKEN|7|IDENTIFIER|inner
+TOKEN|7|DELIMITER|;
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int a]
+  Block
+    Declaration [int inner]
+    Assignment [inner]
+      Int [5]
+  Assignment [a]
+    Identifier [inner]
+  Print
+    Identifier [inner]
+===SYMBOLS===
+SYMBOL|a|int|0|1
+SYMBOL|inner|int|1|3
+===TAC===
+===DONE===
+--- stderr ---
+SEM_ERROR|6|Scope violation: variable used outside its block|inner
+SEM_ERROR|7|Scope violation: variable used outside its block|inner

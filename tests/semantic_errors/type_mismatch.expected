@@ -1,0 +1,45 @@
+===LEX===
+TOKEN|1|KEYWORD|bool
+TOKEN|1|IDENTIFIER|b
+TOKEN|1|DELIMITER|;
+TOKEN|2|IDENTIFIER|b
+TOKEN|2|OPERATOR|=
+TOKEN|2|INT_LITERAL|5
+TOKEN|2|OPERATOR|+
+TOKEN|2|FLOAT_LITERAL|3.2
+TOKEN|2|DELIMITER|;
+TOKEN|3|KEYWORD|int
+TOKEN|3|IDENTIFIER|i
+TOKEN|3|DELIMITER|;
+TOKEN|4|IDENTIFIER|i
+TOKEN|4|OPERATOR|=
+TOKEN|4|FLOAT_LITERAL|2.5
+TOKEN|4|DELIMITER|;
+TOKEN|5|KEYWORD|bool
+TOKEN|5|IDENTIFIER|c
+TOKEN|5|OPERATOR|=
+TOKEN|5|INT_LITERAL|7
+TOKEN|5|DELIMITER|;
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [bool b]
+  Assignment [b]
+    BinaryOp [+]
+      Int [5]
+      Float [3.2]
+  Declaration [int i]
+  Assignment [i]
+    Float [2.5]
+  Declaration [bool c]
+    Int [7]
+===SYMBOLS===
+SYMBOL|b|bool|0|1
+SYMBOL|i|int|0|3
+SYMBOL|c|bool|0|5
+===TAC===
+===DONE===
+--- stderr ---
+SEM_ERROR|2|Invalid assignment (type mismatch)|cannot assign float to bool variable 'b'
+SEM_ERROR|4|Invalid assignment (type mismatch)|cannot assign float to int variable 'i'
+SEM_ERROR|5|Type mismatch in declaration|cannot initialise bool 'c' with int

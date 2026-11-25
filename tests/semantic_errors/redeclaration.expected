@@ -1,0 +1,31 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|x
+TOKEN|1|DELIMITER|;
+TOKEN|2|KEYWORD|float
+TOKEN|2|IDENTIFIER|x
+TOKEN|2|DELIMITER|;
+TOKEN|3|DELIMITER|{
+TOKEN|4|KEYWORD|int
+TOKEN|4|IDENTIFIER|x
+TOKEN|4|DELIMITER|;
+TOKEN|5|KEYWORD|int
+TOKEN|5|IDENTIFIER|x
+TOKEN|5|DELIMITER|;
+TOKEN|6|DELIMITER|}
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int x]
+  Declaration [float x]
+  Block
+    Declaration [int x]
+    Declaration [int x]
+===SYMBOLS===
+SYMBOL|x|int|0|1
+SYMBOL|x|int|1|4
+===TAC===
+===DONE===
+--- stderr ---
+SEM_ERROR|2|Redeclaration in the same scope|x
+SEM_ERROR|5|Redeclaration in the same scope|x

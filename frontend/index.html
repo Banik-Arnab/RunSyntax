@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RunSyntax — Mini Compiler</title>
+<style>
+  :root {
+    --bg:#0d1117; --panel:#161b22; --border:#30363d; --fg:#e6edf3;
+    --muted:#8b949e; --accent:#58a6ff; --ok:#3fb950; --err:#f85149;
+  }
+  *{box-sizing:border-box;}
+  body {
+    margin:0; font-family:'Segoe UI',Tahoma,sans-serif;
+    background:var(--bg); color:var(--fg); height:100vh; overflow:hidden;
+  }
+  header {
+    padding:14px 20px; background:var(--panel); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  header h1 { margin:0; font-size:20px; color:var(--accent); }
+  header small { color:var(--muted); }
+  main { display:flex; height:calc(100vh - 58px); }
+  .pane { flex:1; display:flex; flex-direction:column; border-right:1px solid var(--border); }
+  .pane:last-child { border-right:none; }
+  .pane-header {
+    padding:8px 12px; background:var(--panel); border-bottom:1px solid var(--border);
+    display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted);
+  }
+  textarea {
+    flex:1; background:#0d1117; color:var(--fg); border:none; outline:none;
+    resize:none; padding:12px; font-family:Consolas,'Courier New',monospace;
+    font-size:14px; line-height:1.5;
+  }
+  button {
+    background:var(--accent); color:#fff; border:none; padding:6px 14px;
+    border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;
+  }
+  button.secondary { background:#21262d; border:1px solid var(--border); }
+  button:hover { opacity:0.9; }
+  .tabs {
+    display:flex; gap:2px; background:var(--panel);
+    border-bottom:1px solid var(--border); overflow-x:auto;
+  }
+  .tab {
+    padding:8px 14px; cursor:pointer; font-size:12px; color:var(--muted);
+    white-space:nowrap; border-bottom:2px solid transparent;
+  }
+  .tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+  .results { flex:1; overflow:auto; padding:12px; font-family:Consolas,monospace; font-size:13px; }
+  .results pre { margin:0; white-space:pre-wrap; word-break:break-word; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { padding:6px 8px; text-align:left; border-bottom:1px solid var(--border); }
+  th { color:var(--accent); font-weight:600; }
+  .badge { padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; }
+  .badge.ok { background:rgba(63,185,80,0.15); color:var(--ok); }
+  .badge.err { background:rgba(248,81,73,0.15); color:var(--err); }
+  .err-line { color:var(--err); }
+  .empty { color:var(--muted); font-style:italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>RunSyntax</h1>
+    <small>Web-Based Mini Programming Language Compiler</small>
+  </div>
+</header>
+
+<main>
+  <section class="pane">
+    <div class="pane-header">
+      <span>Source Code</span>
+      <button id="compileBtn">▶ Compile</button>
+      <button id="clearBtn" class="secondary">Clear</button>
+      <button id="exampleBtn" class="secondary">Load Example</button>
+    </div>
+    <textarea id="code" spellcheck="false">int a;
+int b;
+int c;
+a = 5;
+b = 10;
+c = a + b * 2;
+print c;
+
+if (c > 15) {
+    print c;
+} else {
+    print 0;
+}
+
+while (a > 0) {
+    a = a - 1;
+}</textarea>
+  </section>
+
+  <section class="pane">
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-tab="summary">Summary</div>
+      <div class="tab" data-tab="lexical">Lexical</div>
+      <div class="tab" data-tab="syntax">Syntax</div>
+      <div class="tab" data-tab="ast">AST</div>
+      <div class="tab" data-tab="symbols">Symbol Table</div>
+      <div class="tab" data-tab="semantic">Semantic</div>
+      <div class="tab" data-tab="tac">TAC</div>
+    </div>
+    <div class="results" id="results">
+      <p class="empty">Click <b>Compile</b> to see results.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const codeEl = $('code');
+const resultsEl = $('results');
+let currentTab = 'summary';
+let lastResult = null;
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    currentTab = t.dataset.tab;
+    render();
+  };
+});
+
+$('compileBtn').onclick = async () => {
+  resultsEl.innerHTML = '<p class="empty">Compiling…</p>';
+  try {
+    // served by the Node backend -> same origin; opened another way (Live Server) -> call the backend directly
+    const API = location.port === '3000' ? '' : 'http://localhost:3000';
+    const res = await fetch(API + '/api/compile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: codeEl.value })
+    });
+    // read as text first: an empty or non-JSON reply gives a readable message
+    const text = await res.text();
+    try {
+      lastResult = JSON.parse(text);
+    } catch (_) {
+      lastResult = { error: `Server replied with HTTP ${res.status} and no valid JSON. ` +
+        `Open this page from http://localhost:3000 and check the 'node server.js' terminal for errors.` };
+    }
+  } catch (e) {
+    lastResult = { error: `Cannot reach the backend (${e.message}). Start it with: cd backend && node server.js, then open http://localhost:3000` };
+  }
+  render();
+};
+
+$('clearBtn').onclick = () => { codeEl.value = ''; };
+
+$('exampleBtn').onclick = () => {
+  codeEl.value = `int x;
+float y;
+bool ok;
+x = 10;
+y = 3.14;
+ok = x > 5;
+print x;
+if (ok) {
+    print x;
+} else {
+    print 0;
+}
+while (x > 0) {
+    x = x - 1;
+}`;
+};
+
+function badge(ok) {
+  return `<span class="badge ${ok ? 'ok' : 'err'}">${ok ? 'SUCCESS' : 'FAILED'}</span>`;
+}
+
+function render() {
+  if (!lastResult) return;
+  const r = lastResult;
+  if (r.error) { resultsEl.innerHTML = `<p class="err-line">Error: ${r.error}</p>`; return; }
+
+  if (currentTab === 'summary') {
+    const s = r.summary || {};
+    resultsEl.innerHTML = `
+      <table>
+        <tr><th>Phase</th><th>Status</th></tr>
+        <tr><td>Lexical Analysis</td><td>${badge(s.lexical)}</td></tr>
+        <tr><td>Syntax Analysis</td><td>${badge(s.syntax)}</td></tr>
+        <tr><td>AST Construction</td><td>${badge(s.ast)}</td></tr>
+        <tr><td>Semantic Analysis</td><td>${badge(s.semantic)}</td></tr>
+        <tr><td>TAC Generation</td><td>${badge(s.tac)}</td></tr>
+      </table>`;
+  } else if (currentTab === 'lexical') {
+    const errs = (r.lexical && r.lexical.errors) || [];
+    const toks = (r.lexical && r.lexical.tokens) || [];
+    const errHtml = errs.length === 0
+      ? '<p class="empty">No lexical errors.</p>'
+      : errs.map(e => `<p class="err-line">Line ${e.line}: ${escapeHtml(e.message)} '${escapeHtml(e.lexeme)}'</p>`).join('');
+    const tokHtml = toks.length === 0 ? '' : `<table>
+      <tr><th>Line</th><th>Token type</th><th>Lexeme</th></tr>
+      ${toks.map(t => `<tr><td>${t.line}</td><td>${t.kind}</td><td>${escapeHtml(t.lexeme)}</td></tr>`).join('')}
+    </table>`;
+    resultsEl.innerHTML = errHtml + tokHtml;
+  } else if (currentTab === 'syntax') {
+    const errs = (r.syntax && r.syntax.errors) || [];
+    resultsEl.innerHTML = errs.length === 0
+      ? '<p class="empty">No syntax errors.</p>'
+      : errs.map(e => `<p class="err-line">Line ${e.line}: ${e.message}</p>`).join('');
+  } else if (currentTab === 'ast') {
+    resultsEl.innerHTML = r.ast ? `<pre>${escapeHtml(r.ast)}</pre>` : '<p class="empty">No AST.</p>';
+  } else if (currentTab === 'symbols') {
+    const syms = r.symbolTable || [];
+    if (!syms.length) { resultsEl.innerHTML = '<p class="empty">No symbols.</p>'; return; }
+    resultsEl.innerHTML = `<table>
+      <tr><th>Name</th><th>Type</th><th>Scope (0 = global)</th><th>Line</th></tr>
+      ${syms.map(s => `<tr><td>${s.name}</td><td>${s.type}</td><td>${s.scope}</td><td>${s.line}</td></tr>`).join('')}
+    </table>`;
+  } else if (currentTab === 'semantic') {
+    const errs = (r.semantic && r.semantic.errors) || [];
+    resultsEl.innerHTML = errs.length === 0
+      ? '<p class="empty">No semantic errors.</p>'
+      : errs.map(e => `<p class="err-line">Line ${e.line}: ${e.message} ${e.detail ? '['+e.detail+']' : ''}</p>`).join('');
+  } else if (currentTab === 'tac') {
+    resultsEl.innerHTML = (r.tac && r.tac.length)
+      ? `<pre>${escapeHtml(r.tac.join('\n'))}</pre>`
+      : '<p class="empty">No TAC generated.</p>';
+  }
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+}
+
+render();
+</script>
+</body>
+</html>

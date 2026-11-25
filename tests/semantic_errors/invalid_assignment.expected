@@ -1,0 +1,52 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|n
+TOKEN|1|DELIMITER|;
+TOKEN|2|KEYWORD|bool
+TOKEN|2|IDENTIFIER|flag
+TOKEN|2|DELIMITER|;
+TOKEN|3|IDENTIFIER|flag
+TOKEN|3|OPERATOR|=
+TOKEN|3|BOOL_LITERAL|true
+TOKEN|3|DELIMITER|;
+TOKEN|4|IDENTIFIER|n
+TOKEN|4|OPERATOR|=
+TOKEN|4|IDENTIFIER|flag
+TOKEN|4|DELIMITER|;
+TOKEN|5|IDENTIFIER|flag
+TOKEN|5|OPERATOR|=
+TOKEN|5|IDENTIFIER|n
+TOKEN|5|OPERATOR|>
+TOKEN|5|INT_LITERAL|3
+TOKEN|5|DELIMITER|;
+TOKEN|6|IDENTIFIER|n
+TOKEN|6|OPERATOR|=
+TOKEN|6|IDENTIFIER|flag
+TOKEN|6|OPERATOR|&&
+TOKEN|6|BOOL_LITERAL|true
+TOKEN|6|DELIMITER|;
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int n]
+  Declaration [bool flag]
+  Assignment [flag]
+    Bool [true]
+  Assignment [n]
+    Identifier [flag]
+  Assignment [flag]
+    BinaryOp [>]
+      Identifier [n]
+      Int [3]
+  Assignment [n]
+    BinaryOp [&&]
+      Identifier [flag]
+      Bool [true]
+===SYMBOLS===
+SYMBOL|n|int|0|1
+SYMBOL|flag|bool|0|2
+===TAC===
+===DONE===
+--- stderr ---
+SEM_ERROR|4|Invalid assignment (type mismatch)|cannot assign bool to int variable 'n'
+SEM_ERROR|6|Invalid assignment (type mismatch)|cannot assign bool to int variable 'n'

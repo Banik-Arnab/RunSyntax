@@ -1,0 +1,30 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|x
+TOKEN|1|DELIMITER|;
+TOKEN|2|IDENTIFIER|x
+TOKEN|2|OPERATOR|=
+TOKEN|2|IDENTIFIER|y
+TOKEN|2|OPERATOR|+
+TOKEN|2|INT_LITERAL|1
+TOKEN|2|DELIMITER|;
+TOKEN|3|KEYWORD|print
+TOKEN|3|IDENTIFIER|z
+TOKEN|3|DELIMITER|;
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int x]
+  Assignment [x]
+    BinaryOp [+]
+      Identifier [y]
+      Int [1]
+  Print
+    Identifier [z]
+===SYMBOLS===
+SYMBOL|x|int|0|1
+===TAC===
+===DONE===
+--- stderr ---
+SEM_ERROR|2|Undeclared variable|y
+SEM_ERROR|3|Undeclared variable|z

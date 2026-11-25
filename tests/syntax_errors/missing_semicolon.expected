@@ -1,0 +1,13 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|x
+TOKEN|2|IDENTIFIER|x
+TOKEN|2|OPERATOR|=
+TOKEN|2|INT_LITERAL|5
+TOKEN|2|DELIMITER|;
+TOKEN|3|KEYWORD|print
+TOKEN|3|IDENTIFIER|x
+TOKEN|3|DELIMITER|;
+--- stderr ---
+SYNTAX_ERROR|2|syntax error, unexpected identifier, expecting = or ;
+PIPELINE|aborted at syntax stage

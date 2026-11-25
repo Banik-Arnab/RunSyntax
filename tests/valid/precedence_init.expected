@@ -1,0 +1,160 @@
+===LEX===
+TOKEN|2|KEYWORD|int
+TOKEN|2|IDENTIFIER|a
+TOKEN|2|OPERATOR|=
+TOKEN|2|INT_LITERAL|5
+TOKEN|2|DELIMITER|;
+TOKEN|3|KEYWORD|int
+TOKEN|3|IDENTIFIER|b
+TOKEN|3|OPERATOR|=
+TOKEN|3|INT_LITERAL|10
+TOKEN|3|DELIMITER|;
+TOKEN|4|KEYWORD|int
+TOKEN|4|IDENTIFIER|c
+TOKEN|4|DELIMITER|;
+TOKEN|5|IDENTIFIER|c
+TOKEN|5|OPERATOR|=
+TOKEN|5|IDENTIFIER|a
+TOKEN|5|OPERATOR|+
+TOKEN|5|IDENTIFIER|b
+TOKEN|5|OPERATOR|*
+TOKEN|5|INT_LITERAL|2
+TOKEN|5|DELIMITER|;
+TOKEN|6|KEYWORD|float
+TOKEN|6|IDENTIFIER|f
+TOKEN|6|OPERATOR|=
+TOKEN|6|INT_LITERAL|3
+TOKEN|6|DELIMITER|;
+TOKEN|7|IDENTIFIER|f
+TOKEN|7|OPERATOR|=
+TOKEN|7|IDENTIFIER|f
+TOKEN|7|OPERATOR|/
+TOKEN|7|FLOAT_LITERAL|2.5
+TOKEN|7|DELIMITER|;
+TOKEN|8|KEYWORD|bool
+TOKEN|8|IDENTIFIER|ok
+TOKEN|8|OPERATOR|=
+TOKEN|8|DELIMITER|(
+TOKEN|8|IDENTIFIER|a
+TOKEN|8|OPERATOR|<
+TOKEN|8|IDENTIFIER|b
+TOKEN|8|DELIMITER|)
+TOKEN|8|OPERATOR|&&
+TOKEN|8|OPERATOR|!
+TOKEN|8|DELIMITER|(
+TOKEN|8|IDENTIFIER|c
+TOKEN|8|OPERATOR|==
+TOKEN|8|INT_LITERAL|0
+TOKEN|8|DELIMITER|)
+TOKEN|8|DELIMITER|;
+TOKEN|9|DELIMITER|{
+TOKEN|10|KEYWORD|int
+TOKEN|10|IDENTIFIER|a
+TOKEN|10|OPERATOR|=
+TOKEN|10|INT_LITERAL|99
+TOKEN|10|DELIMITER|;
+TOKEN|11|KEYWORD|print
+TOKEN|11|IDENTIFIER|a
+TOKEN|11|DELIMITER|;
+TOKEN|12|DELIMITER|{
+TOKEN|13|KEYWORD|bool
+TOKEN|13|IDENTIFIER|deep
+TOKEN|13|OPERATOR|=
+TOKEN|13|BOOL_LITERAL|true
+TOKEN|13|DELIMITER|;
+TOKEN|14|KEYWORD|if
+TOKEN|14|DELIMITER|(
+TOKEN|14|IDENTIFIER|deep
+TOKEN|14|OPERATOR|||
+TOKEN|14|IDENTIFIER|ok
+TOKEN|14|DELIMITER|)
+TOKEN|14|DELIMITER|{
+TOKEN|14|KEYWORD|print
+TOKEN|14|IDENTIFIER|c
+TOKEN|14|DELIMITER|;
+TOKEN|14|DELIMITER|}
+TOKEN|15|DELIMITER|}
+TOKEN|16|DELIMITER|}
+TOKEN|17|KEYWORD|print
+TOKEN|17|IDENTIFIER|a
+TOKEN|17|DELIMITER|;
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int a]
+    Int [5]
+  Declaration [int b]
+    Int [10]
+  Declaration [int c]
+  Assignment [c]
+    BinaryOp [+]
+      Identifier [a]
+      BinaryOp [*]
+        Identifier [b]
+        Int [2]
+  Declaration [float f]
+    Int [3]
+  Assignment [f]
+    BinaryOp [/]
+      Identifier [f]
+      Float [2.5]
+  Declaration [bool ok]
+    BinaryOp [&&]
+      BinaryOp [<]
+        Identifier [a]
+        Identifier [b]
+      UnaryOp [!]
+        BinaryOp [==]
+          Identifier [c]
+          Int [0]
+  Block
+    Declaration [int a]
+      Int [99]
+    Print
+      Identifier [a]
+    Block
+      Declaration [bool deep]
+        Bool [true]
+      If
+        condition:
+          BinaryOp [||]
+            Identifier [deep]
+            Identifier [ok]
+        then:
+          Block
+            Print
+              Identifier [c]
+  Print
+    Identifier [a]
+===SYMBOLS===
+SYMBOL|a|int|0|2
+SYMBOL|b|int|0|3
+SYMBOL|c|int|0|4
+SYMBOL|f|float|0|6
+SYMBOL|ok|bool|0|8
+SYMBOL|a|int|1|10
+SYMBOL|deep|bool|2|13
+===TAC===
+TAC|a = 5
+TAC|b = 10
+TAC|t1 = b * 2
+TAC|t2 = a + t1
+TAC|c = t2
+TAC|f = 3
+TAC|t3 = f / 2.5
+TAC|f = t3
+TAC|t4 = a < b
+TAC|t5 = c == 0
+TAC|t6 = !t5
+TAC|t7 = t4 && t6
+TAC|ok = t7
+TAC|a = 99
+TAC|print a
+TAC|deep = true
+TAC|t8 = deep || ok
+TAC|ifFalse t8 goto L1
+TAC|print c
+TAC|L1:
+TAC|print a
+===DONE===
+--- stderr ---

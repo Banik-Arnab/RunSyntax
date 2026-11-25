@@ -1,0 +1,124 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|IDENTIFIER|a
+TOKEN|1|OPERATOR|=
+TOKEN|1|INT_LITERAL|1
+TOKEN|1|DELIMITER|;
+TOKEN|2|KEYWORD|bool
+TOKEN|2|IDENTIFIER|b
+TOKEN|2|OPERATOR|=
+TOKEN|2|BOOL_LITERAL|true
+TOKEN|2|DELIMITER|;
+TOKEN|3|KEYWORD|bool
+TOKEN|3|IDENTIFIER|r
+TOKEN|3|DELIMITER|;
+TOKEN|4|IDENTIFIER|r
+TOKEN|4|OPERATOR|=
+TOKEN|4|IDENTIFIER|a
+TOKEN|4|OPERATOR|&&
+TOKEN|4|IDENTIFIER|b
+TOKEN|4|DELIMITER|;
+TOKEN|5|IDENTIFIER|r
+TOKEN|5|OPERATOR|=
+TOKEN|5|OPERATOR|!
+TOKEN|5|IDENTIFIER|a
+TOKEN|5|DELIMITER|;
+TOKEN|6|IDENTIFIER|r
+TOKEN|6|OPERATOR|=
+TOKEN|6|IDENTIFIER|b
+TOKEN|6|OPERATOR|<
+TOKEN|6|IDENTIFIER|a
+TOKEN|6|DELIMITER|;
+TOKEN|7|IDENTIFIER|a
+TOKEN|7|OPERATOR|=
+TOKEN|7|IDENTIFIER|b
+TOKEN|7|OPERATOR|+
+TOKEN|7|INT_LITERAL|1
+TOKEN|7|DELIMITER|;
+TOKEN|8|KEYWORD|float
+TOKEN|8|IDENTIFIER|f
+TOKEN|8|OPERATOR|=
+TOKEN|8|FLOAT_LITERAL|1.5
+TOKEN|8|DELIMITER|;
+TOKEN|9|IDENTIFIER|a
+TOKEN|9|OPERATOR|=
+TOKEN|9|IDENTIFIER|a
+TOKEN|9|OPERATOR|%
+TOKEN|9|IDENTIFIER|f
+TOKEN|9|DELIMITER|;
+TOKEN|10|KEYWORD|if
+TOKEN|10|DELIMITER|(
+TOKEN|10|IDENTIFIER|a
+TOKEN|10|DELIMITER|)
+TOKEN|10|DELIMITER|{
+TOKEN|10|KEYWORD|print
+TOKEN|10|IDENTIFIER|a
+TOKEN|10|DELIMITER|;
+TOKEN|10|DELIMITER|}
+TOKEN|11|KEYWORD|while
+TOKEN|11|DELIMITER|(
+TOKEN|11|INT_LITERAL|3
+TOKEN|11|DELIMITER|)
+TOKEN|11|DELIMITER|{
+TOKEN|11|KEYWORD|print
+TOKEN|11|IDENTIFIER|a
+TOKEN|11|DELIMITER|;
+TOKEN|11|DELIMITER|}
+===SYNTAX_OK===
+===AST===
+Program
+  Declaration [int a]
+    Int [1]
+  Declaration [bool b]
+    Bool [true]
+  Declaration [bool r]
+  Assignment [r]
+    BinaryOp [&&]
+      Identifier [a]
+      Identifier [b]
+  Assignment [r]
+    UnaryOp [!]
+      Identifier [a]
+  Assignment [r]
+    BinaryOp [<]
+      Identifier [b]
+      Identifier [a]
+  Assignment [a]
+    BinaryOp [+]
+      Identifier [b]
+      Int [1]
+  Declaration [float f]
+    Float [1.5]
+  Assignment [a]
+    BinaryOp [%]
+      Identifier [a]
+      Identifier [f]
+  If
+    condition:
+      Identifier [a]
+    then:
+      Block
+        Print
+          Identifier [a]
+  While
+    condition:
+      Int [3]
+    body:
+      Block
+        Print
+          Identifier [a]
+===SYMBOLS===
+SYMBOL|a|int|0|1
+SYMBOL|b|bool|0|2
+SYMBOL|r|bool|0|3
+SYMBOL|f|float|0|8
+===TAC===
+===DONE===
+--- stderr ---
+SEM_ERROR|4|Invalid expression: logical operator needs bool operands|operands are int and bool
+SEM_ERROR|5|Invalid expression: '!' needs a bool operand|operand has type int
+SEM_ERROR|6|Invalid expression: relational operator needs numeric operands|operands are bool and int
+SEM_ERROR|7|Invalid expression: arithmetic needs numeric operands|operands are bool and int
+SEM_ERROR|9|Invalid expression: '%' needs int operands|operands are int and float
+SEM_ERROR|10|If condition must be bool|condition has type int
+SEM_ERROR|11|While condition must be bool|condition has type int

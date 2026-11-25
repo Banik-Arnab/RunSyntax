@@ -1,0 +1,10 @@
+===LEX===
+TOKEN|1|KEYWORD|int
+TOKEN|1|DELIMITER|;
+TOKEN|2|KEYWORD|int
+TOKEN|2|IDENTIFIER|x
+TOKEN|2|DELIMITER|;
+--- stderr ---
+LEX_ERROR|1|Invalid identifier (starts with a digit)|9lives
+LEX_ERROR|3|Unterminated block comment|/*
+PIPELINE|aborted at lexical stage
